@@ -1,0 +1,3 @@
+---
+swarm_advertise_addr: "{{ hostvars[groups['deploy'][0]]['ansible_default_ipv4']['address'] }}"
+swarm_join_token: "{{ hostvars[groups['deploy'][0]]['ansible_facts']['token_manager'] }}"

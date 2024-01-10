@@ -1,6 +1,6 @@
 galaxy_info:
-  role_name: preconfig
-  description: Setup servers for work with Docker
+  role_name: join_cluster
+  description: Join Swarm cluster
   author: Evgeniy Buhaiov
   license: MIT
   min_ansible_version: "2.9"

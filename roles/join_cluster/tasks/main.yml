@@ -1,0 +1,6 @@
+---
+- name: Join to cluster
+  community.docker.docker_swarm:
+    state: join
+    remote_addrs: "{{ swarm_advertise_addr }}"
+    join_token: "{{ swarm_join_token }}"

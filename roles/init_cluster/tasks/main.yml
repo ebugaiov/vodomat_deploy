@@ -1,0 +1,11 @@
+---
+- name: Init cluster
+  community.docker.docker_swarm:
+    state: present
+    advertise_addr: "{{ swarm_advertise_addr }}"
+  register: token
+
+- name: Save token
+  ansible.builtin.set_fact:
+    token_manager: "{{ token.swarm_facts.JoinTokens.Manager }}"
+    cacheable: true

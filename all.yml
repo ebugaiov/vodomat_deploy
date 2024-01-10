@@ -4,9 +4,13 @@
   roles:
     - role: preconfig
       tags: preconfig
+    - role: init_cluster
+      tags: collect_cluster
 
 - name: Manager servers
   hosts: managers
   roles:
     - role: preconfig
       tags: preconfig
+    - role: join_cluster
+      tags: collect_cluster
