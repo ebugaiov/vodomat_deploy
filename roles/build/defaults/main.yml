@@ -1,0 +1,2 @@
+---
+build_temp_folder: "/home/{{ sudo_user }}/temp_for_build"

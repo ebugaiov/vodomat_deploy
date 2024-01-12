@@ -1,0 +1,30 @@
+---
+- name: Copy ssh-key
+  ansible.builtin.copy:
+    src: "~/.ssh/id_rsa"
+    dest: "/home/{{ sudo_user }}/.ssh/id_rsa"
+    mode: "0600"
+
+- name: Clone github repo
+  ansible.builtin.git:
+    repo: "{{ github_url_base }}{{ build_service_name }}.git"
+    accept_newhostkey: true
+    dest: "{{ build_temp_folder }}"
+
+- name: Build image
+  community.docker.docker_image:
+    name: "{{ build_service_name }}"
+    tag: "{{ build_service_tag }}"
+    build:
+      path: "{{ build_temp_folder }}"
+    source: build
+
+- name: Delete temp folder for build
+  ansible.builtin.file:
+    state: absent
+    path: "{{ build_temp_folder }}"
+
+- name: Delete ssh-key
+  ansible.builtin.file:
+    state: absent
+    path: "/home/{{ sudo_user }}/.ssh/id_rsa"

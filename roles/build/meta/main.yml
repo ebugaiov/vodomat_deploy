@@ -1,6 +1,6 @@
 galaxy_info:
-  role_name: init_cluster
-  description: Init Swarm cluster
+  role_name: build
+  description: Build docker image
   author: Evgeniy Bugaiov
   license: MIT
   min_ansible_version: "2.9"

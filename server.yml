@@ -6,6 +6,14 @@
       tags: preconfig
     - role: init_cluster
       tags: collect_cluster
+    - role: build
+      build_service_name: vodomat_server
+      build_service_tag: latest
+      tags: build_server
+    - role: build
+      build_service_name: vodomat_server_admin
+      build_service_tag: latest
+      tags: build_server_admin
 
 - name: Manager servers
   hosts: managers
