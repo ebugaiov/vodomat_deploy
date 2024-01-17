@@ -1,0 +1,9 @@
+---
+- name: "[{{ deploy_service_name }}] Deploy service"
+  community.docker.docker_swarm_service:
+    name: "{{ deploy_service_name }}"
+    image: "redis:{{ deploy_service_tag }}"
+    state: present
+    networks:
+      - name: "{{ server_network_name }}"
+    

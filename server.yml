@@ -14,6 +14,10 @@
       build_service_name: vodomat_server_admin
       build_service_tag: latest
       tags: build_server_admin
+    - role: deploy
+      deploy_service_name: redis
+      deploy_service_tag: latest
+      tags: deploy_redis
 
 - name: Manager servers
   hosts: managers
