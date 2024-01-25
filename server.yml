@@ -9,15 +9,19 @@
     - role: build
       build_service_name: vodomat_server
       build_service_tag: latest
-      tags: build_server
+      tags: [build_server, build_all]
     - role: build
       build_service_name: vodomat_server_admin
       build_service_tag: latest
-      tags: build_server_admin
+      tags: [build_server_admin, build_all]
     - role: deploy
       deploy_service_name: redis
       deploy_service_tag: latest
-      tags: deploy_redis
+      tags: [deploy_redis, deploy_all]
+    - role: deploy
+      deploy_service_name: vodomat_server
+      deploy_service_tag: latest
+      tags: [deploy_vodomat_server, deploy_all]
 
 - name: Manager servers
   hosts: managers

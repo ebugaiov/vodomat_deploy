@@ -22,4 +22,10 @@ ansible-playbook -i inventory/server_cluster.ini server.yml --tags "collect_clus
 ```bash
 ansible-playbook -i inventory/server_cluster.ini server.yml --tags "build_[service_name]"
 ```
---tags <b>"[service_name]"</b>: server, server_admin
+--tags <b>"build_[service_name]"</b>: all(build all images), vodomat_server, vodomat_server_admin
+
+#### - Deploy service to cluster
+```bash
+ansible-playbook -i inventory/server_cluster.ini server.yml --tags "deploy_[service_name]"
+```
+--tags <b>"[service_name]"</b>: all(deploy all services), redis, vodomat_server, 
