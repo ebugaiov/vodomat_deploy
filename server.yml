@@ -1,32 +1,19 @@
 ---
 - name: Deploy server
-  hosts: deploy
+  hosts: server
   roles:
+    # Preconfig
     - role: preconfig
       tags: preconfig
-    - role: init_cluster
-      tags: collect_cluster
-    - role: build
-      build_service_name: vodomat_server
-      build_service_tag: latest
-      tags: [build_server, build_all]
-    - role: build
-      build_service_name: vodomat_server_admin
-      build_service_tag: latest
-      tags: [build_server_admin, build_all]
-    - role: deploy
-      deploy_service_name: redis
-      deploy_service_tag: latest
-      tags: [deploy_redis, deploy_all]
-    - role: deploy
-      deploy_service_name: vodomat_server
-      deploy_service_tag: latest
-      tags: [deploy_vodomat_server, deploy_all]
-
-- name: Manager servers
-  hosts: managers
-  roles:
-    - role: preconfig
-      tags: preconfig
-    - role: join_cluster
-      tags: collect_cluster
+    # Deploy Vodomat Server
+    - role: deploy_service
+      service_name: vodomat_server
+      tags: [deploy_server, deploy_all]
+    # Deploy Vodomat Server API
+#    - role: deploy_service
+#      service_name: api
+#      tags: [deploy_api, deploy_all]
+    # Deploy Vodomat Server Admin
+#    - role: deploy_service
+#      service_name: server_admin
+#      tags: [deploy_server_admin, deploy_all]

@@ -1,0 +1,53 @@
+---
+- name: Save tag for image
+  ansible.builtin.set_fact:
+    "{{ service_name }}_image_tag": "{{ ansible_date_time.epoch }}"
+    cacheable: true
+
+- name: Clone repo
+  block:
+    - name: Copy ssh-key
+      ansible.builtin.copy:
+        src: "~/.ssh/id_rsa"
+        dest: "/home/{{ sudo_user }}/.ssh/id_rsa"
+        mode: "0600"
+
+    - name: "[{{ service_name }}] Clone github repo"
+      ansible.builtin.git:
+        repo: "{{ github_url_base }}/{{ service_name }}.git"
+        accept_newhostkey: true
+        dest: "{{ build_temp_folder }}"
+
+    - name: Remove ssh-key
+      ansible.builtin.file:
+        state: absent
+        path: "/home/{{ sudo_user }}/.ssh/id_rsa"
+
+- name: Build service image
+  block:
+    - name: Build image
+      community.docker.docker_image:
+        name: "{{ service_name }}"
+        tag: "{{ vars[service_name + '_image_tag'] }}"
+        build:
+          path: "{{ build_temp_folder }}"
+        source: build
+
+    - name: Remove temp folder for build
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_temp_folder }}"
+
+- name: Create docker network for all services
+  community.docker.docker_network:
+    name: "{{ server_network_name }}"
+
+- name: Run redis container
+  community.docker.docker_container:
+    name: redis
+    image: redis:latest
+    networks:
+      - name: "{{ server_network_name }}"
+
+- name: Deploy service
+  ansible.builtin.include_tasks: "../services/{{ service_name }}/service.yml"

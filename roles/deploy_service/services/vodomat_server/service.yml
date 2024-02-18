@@ -1,0 +1,23 @@
+---
+- name: Create env file on the server
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "/home/{{ sudo_user }}/.env"
+    mode: "0644"
+
+- name: "[{{ service_name }}] Run service container(s)"
+  community.docker.docker_container:
+    name: "vodomat_server-{{ item }}"
+    image: "vodomat_server:{{ vodomat_server_image_tag }}"
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    env:
+      APP_PORT: "{{ item }}"
+    env_file: "/home/{{ sudo_user }}/.env"
+  with_sequence: start=0 count={{ server_container_count }}
+
+- name: Delete env file from server
+  ansible.builtin.file:
+    state: absent
+    path: "/home/{{ sudo_user }}/.env"

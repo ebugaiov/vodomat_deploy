@@ -1,11 +1,9 @@
 ---
 sudo_user: jerrye
 
-swarm_advertise_addr: "{{ hostvars[groups['deploy'][0]]['ansible_default_ipv4']['address'] }}"
-swarm_join_token: "{{ hostvars[groups['deploy'][0]]['ansible_facts']['token_manager'] }}"
-
 server_network_name: server_network
 
-registry_name: localhost:5000
+vodomat_server_image_tag: "{{ hostvars['vodomat_server']['ansible_facts']['vodomat_server_image_tag'] }}"
+vodomat_api_image_tag: "{{ hostvars['server']['ansible_facts']['vodomat_api_image_tag'] }}"
 
 github_url_base: git@github.com:ebugaiov

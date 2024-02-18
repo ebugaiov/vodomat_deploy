@@ -1,2 +1,3 @@
 ---
 build_temp_folder: "/home/{{ sudo_user }}/temp_for_build"
+server_container_count: 2
