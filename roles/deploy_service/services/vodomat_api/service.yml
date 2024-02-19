@@ -1,0 +1,9 @@
+---
+- name: "[vodomat_api] Run service container(s)"
+  community.docker.docker_container:
+    name: vodomat_api
+    image: "vodomat_api:{{ vodomat_api_image_tag }}"
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    env_file: "{{ path_to_env_file }}"

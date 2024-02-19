@@ -1,10 +1,18 @@
 ---
-- name: Save tag for image
-  ansible.builtin.set_fact:
-    "{{ service_name }}_image_tag": "{{ ansible_date_time.epoch }}"
-    cacheable: true
+- name: Create requirements for all services
+  block:
+    - name: Create docker network for all services
+      community.docker.docker_network:
+        name: "{{ server_network_name }}"
 
-- name: Clone repo
+    - name: Run redis container
+      community.docker.docker_container:
+        name: redis
+        image: redis:latest
+        networks:
+          - name: "{{ server_network_name }}"
+
+- name: "[{{ service_name }}] Clone repo"
   block:
     - name: Copy ssh-key
       ansible.builtin.copy:
@@ -12,7 +20,7 @@
         dest: "/home/{{ sudo_user }}/.ssh/id_rsa"
         mode: "0600"
 
-    - name: "[{{ service_name }}] Clone github repo"
+    - name: Clone github repo
       ansible.builtin.git:
         repo: "{{ github_url_base }}/{{ service_name }}.git"
         accept_newhostkey: true
@@ -23,7 +31,12 @@
         state: absent
         path: "/home/{{ sudo_user }}/.ssh/id_rsa"
 
-- name: Build service image
+- name: "[{{ service_name }}] Save tag for image"
+  ansible.builtin.set_fact:
+    "{{ service_name }}_image_tag": "{{ ansible_date_time.epoch }}"
+    cacheable: true
+
+- name: "[{{ service_name }}] Build service image"
   block:
     - name: Build image
       community.docker.docker_image:
@@ -38,16 +51,18 @@
         state: absent
         path: "{{ build_temp_folder }}"
 
-- name: Create docker network for all services
-  community.docker.docker_network:
-    name: "{{ server_network_name }}"
+- name: "[{{ service_name }}] Run service container(s)"
+  block:
+    - name: Create env file on the server
+      ansible.builtin.template:
+        src: "../services/{{ service_name }}/.env.j2"
+        dest: "{{ path_to_env_file }}"
+        mode: "0644"
 
-- name: Run redis container
-  community.docker.docker_container:
-    name: redis
-    image: redis:latest
-    networks:
-      - name: "{{ server_network_name }}"
+    - name: Run container
+      ansible.builtin.include_tasks: "../services/{{ service_name }}/service.yml"
 
-- name: Deploy service
-  ansible.builtin.include_tasks: "../services/{{ service_name }}/service.yml"
+    - name: Delete env file from the server
+      ansible.builtin.file:
+        state: absent
+        path: "{{ path_to_env_file }}"

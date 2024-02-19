@@ -10,9 +10,9 @@
       service_name: vodomat_server
       tags: [deploy_server, deploy_all]
     # Deploy Vodomat Server API
-#    - role: deploy_service
-#      service_name: api
-#      tags: [deploy_api, deploy_all]
+    - role: deploy_service
+      service_name: vodomat_api
+      tags: [deploy_api, deploy_all]
     # Deploy Vodomat Server Admin
 #    - role: deploy_service
 #      service_name: server_admin

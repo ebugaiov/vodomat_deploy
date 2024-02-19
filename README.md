@@ -14,7 +14,17 @@ ansible-playbook -i inventory.ini server.yml -K --tags "preconfig"
 ```
 -K - enter sudo password
 
+#### - Deploy ALL services
+```bash
+ansible-playbook -i inventory.ini server.yml --tags "deploy_all"
+```
+
 #### - Deploy vodomat_server service
 ```bash
 ansible-playbook -i inventory.ini server.yml --tags "deploy_server"
-``` 
+```
+
+#### - Deploy vodomat_api service
+```bash
+ansible-playbook -i inventory.ini server.yml --tags "deploy_api"
+```

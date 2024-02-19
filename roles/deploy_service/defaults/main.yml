@@ -1,3 +1,4 @@
 ---
 build_temp_folder: "/home/{{ sudo_user }}/temp_for_build"
 server_container_count: 2
+path_to_env_file: "/home/{{ sudo_user }}/.env"
