@@ -1,0 +1,26 @@
+---
+- name: Docker volume for vodomat_server_admin static
+  community.docker.docker_volume:
+    name: server_admin_static
+
+- name: Docker volume for vodomat_server_admin local db
+  community.docker.docker_volume:
+    name: server_admin_db
+
+- name: "[vodomat_api] Run service container(s)"
+  community.docker.docker_container:
+    name: vodomat_server_admin
+    image: "vodomat_server_admin:{{ vodomat_server_admin_image_tag }}"
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    volumes:
+      - server_admin_static:/opt/server_admin/static:z
+      - server_admin_db:/opt/server_admin/database:Z
+    env_file: "{{ path_to_env_file }}"
+
+- name: Collect all static in static_volume
+  community.docker.docker_container_exec:
+    container: vodomat_server_admin
+    command: python manage.py collectstatic --no-input
+
