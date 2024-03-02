@@ -6,7 +6,10 @@
     restart_policy: always
     networks:
       - name: "{{ server_network_name }}"
-    env:
-      APP_PORT: "{{ item }}"
     env_file: "{{ path_to_env_file }}"
+    labels:
+      traefik.enable=true
+      traefik.http.routers.vodomat_server-http.rule=Host(`server.local`)
+      traefik.http.services.vodomat_server.loadbalancer.server.port="{{ server_port }}"
+      traefik.http.routers.vodomat_server-http.entrypoints=http
   with_sequence: start=0 count={{ server_container_count }}

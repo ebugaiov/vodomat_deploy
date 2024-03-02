@@ -14,6 +14,11 @@ ansible-playbook -i inventory.ini server.yml -K --tags "preconfig"
 ```
 -K - enter sudo password
 
+#### - Run reverse-proxy (Traefik)
+```bash
+ansible-playbook -i inventory.ini server.yml --tags "run_proxy"
+```
+
 #### - Deploy ALL services
 ```bash
 ansible-playbook -i inventory.ini server.yml --tags "deploy_all"

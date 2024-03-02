@@ -1,0 +1,21 @@
+---
+- name: Run Traefik container
+  community.docker.docker_container:
+    name: traefik
+    image: traefik
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+#      - "--log.level=DEBUG"

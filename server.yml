@@ -5,6 +5,9 @@
     # Preconfig
     - role: preconfig
       tags: preconfig
+    # Run reverse-proxy
+    - role: run_proxy
+      tags: run_proxy
     # Deploy Vodomat Server
     - role: deploy_service
       service_name: vodomat_server

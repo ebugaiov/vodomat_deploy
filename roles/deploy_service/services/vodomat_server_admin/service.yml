@@ -1,26 +1,54 @@
 ---
-- name: Docker volume for vodomat_server_admin static
-  community.docker.docker_volume:
-    name: server_admin_static
+- name: Create volumes for server_admin
+  block:
+    - name: Docker volume for vodomat_server_admin static
+      community.docker.docker_volume:
+        name: server_admin_static
 
-- name: Docker volume for vodomat_server_admin local db
-  community.docker.docker_volume:
-    name: server_admin_db
+    - name: Docker volume for vodomat_server_admin local db
+      community.docker.docker_volume:
+        name: server_admin_db
 
-- name: "[vodomat_api] Run service container(s)"
-  community.docker.docker_container:
-    name: vodomat_server_admin
-    image: "vodomat_server_admin:{{ vodomat_server_admin_image_tag }}"
-    restart_policy: always
-    networks:
-      - name: "{{ server_network_name }}"
-    volumes:
-      - server_admin_static:/opt/server_admin/static:z
-      - server_admin_db:/opt/server_admin/database:Z
-    env_file: "{{ path_to_env_file }}"
+- name: Run service
+  block:
+    - name: "[vodomat_api] Run service container(s)"
+      community.docker.docker_container:
+        name: vodomat_server_admin
+        image: "vodomat_server_admin:{{ vodomat_server_admin_image_tag }}"
+        restart_policy: always
+        networks:
+          - name: "{{ server_network_name }}"
+        volumes:
+          - server_admin_static:/opt/server_admin/static:z
+          - server_admin_db:/opt/server_admin/database:Z
+        env_file: "{{ path_to_env_file }}"
 
-- name: Collect all static in static_volume
-  community.docker.docker_container_exec:
-    container: vodomat_server_admin
-    command: python manage.py collectstatic --no-input
+    - name: Collect all static in static_volume
+      community.docker.docker_container_exec:
+        container: vodomat_server_admin
+        command: python manage.py collectstatic --no-input
+
+- name: Run nginx
+  block:
+    - name: Copy nginx config file to remote server
+      ansible.builtin.template:
+        src: ./server_admin.conf.j2
+        dest: "/home/{{ sudo_user }}/server_admin.conf"
+        mode: "0644"
+
+    - name: Run nginx container
+      community.docker.docker_container:
+        name: nginx
+        image: nginx
+        restart_policy: always
+        networks:
+          - name: "{{ server_network_name }}"
+        volumes:
+          - "/home/{{ sudo_user }}/server_admin.conf:/etc/nginx/conf.d/default.conf:ro"
+          - server_admin_static:/opt/server_admin/static:ro
+        labels:
+          traefik.enable=true
+          traefik.http.routers.vodomat_server_admin-http.rule=Host(`admin.server.local`)
+          traefik.http.services.vodomat_server_admin.loadbalancer.server.port=80
+          traefik.http.routers.vodomat_server_admin-http.entrypoints=http
 
