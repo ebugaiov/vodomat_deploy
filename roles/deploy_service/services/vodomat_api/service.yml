@@ -9,6 +9,6 @@
     env_file: "{{ path_to_env_file }}"
     labels:
       traefik.enable=true
-      traefik.http.routers.vodomat_api-http.rule=Host(`api.server.local`)
+      traefik.http.routers.vodomat_api-http.rule=Host(`"{{ api_url }}"`)
       traefik.http.services.vodomat_api.loadbalancer.server.port="{{ api_port }}"
       traefik.http.routers.vodomat_api-http.entrypoints=http
