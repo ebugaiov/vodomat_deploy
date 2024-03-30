@@ -2,3 +2,4 @@
 .idea
 venv
 vault.yml
+db.sqlite3

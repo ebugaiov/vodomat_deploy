@@ -28,6 +28,15 @@
         container: vodomat_server_admin
         command: python manage.py collectstatic --no-input
 
+    - name: Copy user database if it does not exist
+      become: true
+      ansible.builtin.copy:
+        src: ./db.sqlite3
+        dest: /var/lib/docker/volumes/server_admin_db/_data/db.sqlite3
+        mode: "0644"
+        force: false
+      ignore_errors: true
+
 - name: Run nginx
   block:
     - name: Copy nginx config file to remote server

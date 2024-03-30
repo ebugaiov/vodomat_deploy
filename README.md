@@ -36,5 +36,5 @@ ansible-playbook -i inventory.ini server.yml --tags "deploy_api"
 
 #### - Deploy vodomat_server_admin service
 ```bash
-ansible-playbook -i inventory.ini server.yml --tags "deploy_server_admin"
+ansible-playbook -i inventory.ini server.yml -K --tags "deploy_server_admin"
 ```
