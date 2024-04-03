@@ -58,6 +58,4 @@
         labels:
           traefik.enable=true
           traefik.http.routers.vodomat_server_admin-http.rule=Host(`"{{ server_admin_url }}"`)
-          traefik.http.services.vodomat_server_admin.loadbalancer.server.port=80
           traefik.http.routers.vodomat_server_admin-http.entrypoints=http
-
