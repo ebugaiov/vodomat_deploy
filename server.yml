@@ -11,12 +11,4 @@
     # Deploy Vodomat Server
     - role: deploy_service
       deploy_service_name: vodomat_server
-      tags: [deploy_server, deploy_all]
-    # Deploy Vodomat Server API
-    - role: deploy_service
-      deploy_service_name: vodomat_api
-      tags: [deploy_api, deploy_all]
-    # Deploy Vodomat Server Admin
-    - role: deploy_service
-      deploy_service_name: vodomat_server_admin
-      tags: [deploy_server_admin, deploy_all]
+      tags: [deploy_server]
