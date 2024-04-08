@@ -1,10 +1,6 @@
 ---
 - name: Create requirements for all services
   block:
-    - name: Create docker network for all services
-      community.docker.docker_network:
-        name: "{{ server_network_name }}"
-
     - name: Run redis container
       community.docker.docker_container:
         name: redis

@@ -1,8 +1,13 @@
 ---
+- name: Create docker network for all services
+  community.docker.docker_network:
+    name: "{{ server_network_name }}"
+
 - name: Create access.log file for Traefik
   ansible.builtin.file:
     path: "/home/{{ sudo_user }}/access.log"
     state: touch
+    mode: "0664"
 
 - name: Run Traefik container
   community.docker.docker_container:
