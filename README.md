@@ -1,7 +1,10 @@
 # vodomat_deploy
 
-Vodomat_deploy is a bunch of scripts deploying vodomat services to production.<br>
-Change in vault file several variables before deploy:
+### Vodomat_deploy is a bunch of scripts deploying vodomat services to production.
+### There are two git branches:
+- main: for production deploy
+- dev: for local deploy
+### Check in vault file several variables before deploy in production environment:
 - sudo_user
 - vodomat_server_hostname
 - vodomat_hub_hostname
