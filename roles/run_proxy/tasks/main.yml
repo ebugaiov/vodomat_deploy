@@ -9,6 +9,10 @@
     state: touch
     mode: "0664"
 
+- name: Create docker volume to store the certificates
+  community.docker.docker_volume:
+    name: traefik_public_certificates
+
 - name: Run Traefik container
   community.docker.docker_container:
     name: traefik
@@ -19,6 +23,7 @@
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/home/{{ sudo_user }}/access.log:/var/log/access.log:rw"
+      - "traefik_volume_certificates:/certificates:rw"
     ports:
       - "80:80"
       - "443:443"
@@ -27,5 +32,9 @@
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.http.address=:80"
       - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.le.acme.email={{ email }}"
+      - "--certificatesresolvers.le.acme.storage=/certificates/acme.json"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
       - "--accesslog=true"
       - "--accesslog.filepath=/var/log/access.log"
+      - "--log"
