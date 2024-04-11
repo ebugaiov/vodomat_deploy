@@ -11,3 +11,10 @@
       traefik.enable=true
       traefik.http.routers.vodomat_api-http.rule=Host(`"{{ api_url }}"`)
       traefik.http.routers.vodomat_api-http.entrypoints=http
+      traefik.http.routers.vodomat_api-https.rule=Host(`"{{ api_url }}"`)
+      traefik.http.routers.vodomat_api-https.entrypoints=https
+      traefik.http.routers.vodomat_api-https.tls=true
+      traefik.http.routers.vodomat_api-https.tls.certresolver=le
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      traefik.http.routers.vodomat_api-http.middlewares=https-redirect
