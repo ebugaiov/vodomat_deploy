@@ -2,6 +2,10 @@
 - name: Setup ufw
   become: true
   block:
+    - name: Install ufw
+      ansible.builtin.apt:
+        name: ufw
+
     - name: Open tcp ports
       community.general.ufw:
         rule: allow
