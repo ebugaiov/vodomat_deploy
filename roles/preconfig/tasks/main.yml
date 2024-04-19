@@ -11,7 +11,7 @@
         rule: allow
         port: "{{ item }}"
         proto: tcp
-      loop: [22, 80, 443]
+      loop: [22]
 
     - name: Enable ufw
       community.general.ufw:
@@ -32,6 +32,10 @@
           - curl
           - gnupg
           - python3-pip
+          - python3-dev
+          - default-libmysqlclient-dev
+          - build-essential
+          - pkg-config
         update_cache: true
         cache_valid_time: 86400
 
@@ -64,7 +68,9 @@
   block:
     - name: Install pips packages
       ansible.builtin.pip:
-        name: docker
+        name:
+          - docker
+          - mysqlclient
 
 - name: Completion installation
   become: true

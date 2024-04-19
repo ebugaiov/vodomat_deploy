@@ -8,6 +8,9 @@
     # Run reverse-proxy
     - role: run_proxy
       tags: run_proxy
+    # Run database
+    - role: run_database
+      tags: run_database
     # Deploy Vodomat Server
     - role: deploy_service
       deploy_service_name: vodomat_server

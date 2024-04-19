@@ -1,0 +1,37 @@
+---
+- name: Run Database
+  block:
+    - name: Create volume for db
+      community.docker.docker_volume:
+        name: vodomat_db
+
+    - name: Run MariaDB container
+      community.docker.docker_container:
+        name: "vodomat_db"
+        image: "mariadb:lts"
+        restart_policy: always
+        networks:
+          - name: "{{ server_network_name }}"
+        volumes:
+          - vodomat_db:/var/lib/mysql
+          - /tmp/mysqld:/var/run/mysqld
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ db_server_local['root_password'] }}"
+          MYSQL_ROOT_HOST: localhost
+          MYSQL_DATABASE: "{{ db_server_local['database'] }}"
+          MYSQL_USER: "{{ db_server_local['user'] }}"
+          MYSQL_PASSWORD: "{{ db_server_local['password'] }}"
+
+    - name: Wait until db start
+      ansible.builtin.pause:
+        seconds: 15
+
+    - name: Create read-only user
+      community.mysql.mysql_user:
+        name: "{{ db_server_local['user_read_only'] }}"
+        password: "{{ db_server_local['password_read_only'] }}"
+        host: '%'
+        priv: "{{ db_server_local['database'] }}.*:SELECT"
+        login_unix_socket: /tmp/mysqld/mysqld.sock
+        login_user: root
+        login_password: "{{ db_server_local['root_password'] }}"
