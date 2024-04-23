@@ -18,14 +18,14 @@
   block:
     - name: Create script for delete old statistic
       ansible.builtin.template:
-        src: ./delete_old_statistic.py.j2
-        dest: "/home/{{ sudo_user }}/delete_old_statistic.py"
+        src: ./delete_old_data.py.j2
+        dest: "/home/{{ sudo_user }}/delete_old_data.py"
         owner: "{{ sudo_user }}"
         mode: '0700'
 
     - name: Add script to cron
       ansible.builtin.cron:
-        name: "Delete old statistics rows"
+        name: "Delete old rows"
         minute: "0"
         hour: "3"
-        job: "/home/{{ sudo_user }}/delete_old_statistic.py"
+        job: "/home/{{ sudo_user }}/delete_old_data.py"
