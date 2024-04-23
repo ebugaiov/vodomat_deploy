@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+from datetime import date, timedelta
+import MySQLdb
+
+interval = date.today() - timedelta(days=30)
+db = MySQLdb.connect(unix_socket='/tmp/mysqld/mysqld.sock',
+                     user="{{ db_server_local['user'] }}",
+                     password="{{ db_server_local['password'] }}",
+                     database="{{ db_server_local['database'] }}")
+cursor = db.cursor()
+
+cursor.execute(f'DELETE FROM statistic WHERE time < ${interval}')
+db.commit()
+cursor.execute('OPTIMIZE TABLE statistic')
+
+db.close()

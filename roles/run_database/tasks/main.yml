@@ -10,6 +10,8 @@
         name: "vodomat_db"
         image: "mariadb:lts"
         restart_policy: always
+        ports:
+          - "3306:3306"
         networks:
           - name: "{{ server_network_name }}"
         volumes:
@@ -26,12 +28,12 @@
       ansible.builtin.pause:
         seconds: 15
 
-    - name: Create read-only user
-      community.mysql.mysql_user:
-        name: "{{ db_server_local['user_read_only'] }}"
-        password: "{{ db_server_local['password_read_only'] }}"
-        host: '%'
-        priv: "{{ db_server_local['database'] }}.*:SELECT"
-        login_unix_socket: /tmp/mysqld/mysqld.sock
-        login_user: root
-        login_password: "{{ db_server_local['root_password'] }}"
+- name: Create read-only user
+  community.mysql.mysql_user:
+    name: "{{ db_server_local['user_read_only'] }}"
+    password: "{{ db_server_local['password_read_only'] }}"
+    host: '%'
+    priv: "{{ db_server_local['database'] }}.*:SELECT"
+    login_unix_socket: /tmp/mysqld/mysqld.sock
+    login_user: root
+    login_password: "{{ db_server_local['root_password'] }}"

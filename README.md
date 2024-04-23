@@ -26,6 +26,11 @@ ansible-playbook -i inventory.ini server.yml -K --tags "preconfig"
 ansible-playbook -i inventory.ini server.yml --tags "run_proxy"
 ```
 
+#### - Run database (MariaDB)
+```bash
+ansible-playbook -i inventory.ini server.yml --tags "run_database"
+```
+
 #### - Deploy vodomat_server service
 ```bash
 ansible-playbook -i inventory.ini server.yml --tags "deploy_server"
