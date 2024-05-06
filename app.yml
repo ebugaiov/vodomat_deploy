@@ -1,0 +1,24 @@
+---
+- name: Deploy app
+  hosts: app
+  roles:
+    # Preconfig
+    - role: preconfig
+      tags: preconfig
+    # Run reverse-proxy
+    - role: run_proxy
+      tags: run_proxy
+    # Deploy Vodomat Pay (API)
+    - role: deploy_service
+      deploy_service_name: vodomat_pay
+      deploy_service_postfix: _api
+      github_repo_name: "vodomat-pay"
+      dockerfile: "Dockerfile.api"
+      tags: [deploy_app_api, deploy_all]
+    # Deploy Vodomat Pay (Frontend)
+    - role: deploy_service
+      deploy_service_name: vodomat_pay
+      deploy_service_postfix: _frontend
+      github_repo_name: "vodomat-pay"
+      dockerfile: "Dockerfile.app"
+      tags: [deploy_app_frontend, deploy_all]

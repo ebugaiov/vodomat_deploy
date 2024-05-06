@@ -1,0 +1,35 @@
+---
+- name: "[vodomat-pay_api] Run service container"
+  community.docker.docker_container:
+    name: vodomat_pay_api
+    image: "vodomat_pay_api:{{ vodomat_pay_image_tag }}"
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    env_file: "{{ path_to_env_file }}"
+#    env:
+#      FLASK_DEBUG: "true"
+  when: deploy_service_postfix == "_api"
+
+- name: "[vodomat-pay_frontend] Run service container"
+  block:
+    - name: Copy nginx config file to remote server
+      ansible.builtin.template:
+        src: ./pay.conf.j2
+        dest: "/home/{{ sudo_user }}/pay.conf"
+        mode: "0644"
+
+    - name: Run nginx container with frontend
+      community.docker.docker_container:
+        name: vodomat_pay_frontend
+        image: "vodomat_pay_frontend:{{ vodomat_pay_image_tag }}"
+        restart_policy: always
+        networks:
+          - name: "{{ server_network_name }}"
+        volumes:
+          - "/home/{{ sudo_user }}/pay.conf:/etc/nginx/conf.d/default.conf:ro"
+        labels:
+          traefik.enable=true
+          traefik.http.routers.vodomat_api-http.rule=Host(`"{{ pay_url }}"`)
+          traefik.http.routers.vodomat_api-http.entrypoints=http
+  when: deploy_service_postfix == "_frontend"

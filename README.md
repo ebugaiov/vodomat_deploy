@@ -67,4 +67,33 @@ ansible-playbook -i inventory.ini hub.yml --tags "deploy_api"
 ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_server_admin"
 ```
 --------
+### 3. App - deploy vodomat-pay application (app.yml):
+ - vodomat_pay_api
+ - vodomat_pay_frontend
+
+#### - Setup instance(install docker and etc.):
+```bash
+ansible-playbook -i inventory.ini app.yml -K --tags "preconfig"
+```
+
+#### - Run reverse-proxy (Traefik)
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "run_proxy"
+```
+
+#### - Deploy ALL services
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "deploy_all"
+```
+
+#### - Deploy vodomat_pay_api service
+```bash
+ansible-playbook -i inventory.ini hub.yml --tags "deploy_app_api"
+```
+
+#### - Deploy vodomat_pay_frontend service
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "deploy_app_frontend"
+```
+--------
 -K - enter sudo password

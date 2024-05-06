@@ -3,6 +3,10 @@ build_temp_folder: "/home/{{ sudo_user }}/temp_for_build"
 
 path_to_env_file: "/home/{{ sudo_user }}/.env"
 
+dockerfile: "Dockerfile"
+github_repo_name: "{{ deploy_service_name }}"
+deploy_service_postfix: ''
+
 server_port: 9000
 server_container_count: 2
 

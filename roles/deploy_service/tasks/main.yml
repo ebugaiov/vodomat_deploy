@@ -19,35 +19,26 @@
 
     - name: Clone github repo
       ansible.builtin.git:
-        repo: "{{ github_url_base }}/{{ deploy_service_name }}.git"
+        repo: "{{ github_url_base }}/{{ github_repo_name }}.git"
         accept_newhostkey: true
         dest: "{{ build_temp_folder }}"
       register: git_result
 
-    - name: Remove ssh-key
-      ansible.builtin.file:
-        state: absent
-        path: "/home/{{ sudo_user }}/.ssh/id_rsa"
-
-- name: "[{{ deploy_service_name }}] Save tag for image"
-  ansible.builtin.set_fact:
-    "{{ deploy_service_name }}_image_tag": "{{ git_result.after[:6] }}"
-    cacheable: true
-
 - name: "[{{ deploy_service_name }}] Build service image"
   block:
+    - name: "[{{ deploy_service_name }}] Save tag for image"
+      ansible.builtin.set_fact:
+        "{{ deploy_service_name }}_image_tag": "{{ git_result.after[:6] }}"
+        cacheable: true
+
     - name: Build image
       community.docker.docker_image:
-        name: "{{ deploy_service_name }}"
+        name: "{{ deploy_service_name + deploy_service_postfix }}"
         tag: "{{ vars[deploy_service_name + '_image_tag'] }}"
         build:
           path: "{{ build_temp_folder }}"
+          dockerfile: "{{ dockerfile }}"
         source: build
-
-    - name: Remove temp folder for build
-      ansible.builtin.file:
-        state: absent
-        path: "{{ build_temp_folder }}"
 
 - name: "[{{ deploy_service_name }}] Run service container(s)"
   block:
@@ -59,6 +50,18 @@
 
     - name: Run container
       ansible.builtin.include_tasks: "../services/{{ deploy_service_name }}/service.yml"
+
+- name: Clean. Delete temp dir and files
+  block:
+    - name: Remove ssh-key
+      ansible.builtin.file:
+        state: absent
+        path: "/home/{{ sudo_user }}/.ssh/id_rsa"
+
+    - name: Remove temp folder for build
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_temp_folder }}"
 
     - name: Delete env file from the server
       ansible.builtin.file:
