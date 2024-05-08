@@ -1,17 +1,27 @@
 ---
-- name: Create docker network for all services
-  community.docker.docker_network:
-    name: "{{ server_network_name }}"
+- name: Create requirements
+  block:
+    - name: Create docker network for all services
+      community.docker.docker_network:
+        name: "{{ server_network_name }}"
 
-- name: Create access.log file for Traefik
-  ansible.builtin.file:
-    path: "/home/{{ sudo_user }}/access.log"
-    state: touch
-    mode: "0664"
+    - name: Create docker volume to store the certificates
+      community.docker.docker_volume:
+        name: traefik_public_certificates
 
-- name: Create docker volume to store the certificates
-  community.docker.docker_volume:
-    name: traefik_public_certificates
+    - name: Create directory for traefik access logs
+      become: true
+      ansible.builtin.file:
+        path: /var/log/traefik
+        state: directory
+        mode: "0644"
+
+    - name: Create logrotate conf
+      become: true
+      ansible.builtin.copy:
+        src: ./traefik.logrotate.conf
+        dest: /etc/logrotate.d/traefik
+        mode: "0644"
 
 - name: Run Traefik container
   community.docker.docker_container:
@@ -22,7 +32,7 @@
       - name: "{{ server_network_name }}"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/home/{{ sudo_user }}/access.log:/var/log/access.log:rw"
+      - "/var/log/traefik:/var/log:rw"
       - "traefik_volume_certificates:/certificates:rw"
     ports:
       "{{ ['80:80'] if ansible_host == vodomat_server_hostname else ['80:80', '443:443'] }}"
