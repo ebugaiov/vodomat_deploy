@@ -11,7 +11,7 @@
         image: "mariadb:lts"
         restart_policy: always
         ports:
-          - "3306:3306"
+          - "{{ db_server_local['port'] }}:3306"
         networks:
           - name: "{{ server_network_name }}"
         volumes:

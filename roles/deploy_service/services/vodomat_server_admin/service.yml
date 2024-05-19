@@ -59,6 +59,7 @@
           traefik.enable=true
           traefik.http.routers.vodomat_server_admin-http.rule=Host(`"{{ server_admin_url }}"`)
           traefik.http.routers.vodomat_server_admin-http.entrypoints=http
+          {% if production %}
           traefik.http.routers.vodomat_server_admin-https.rule=Host(`"{{ server_admin_url }}"`)
           traefik.http.routers.vodomat_server_admin-https.entrypoints=https
           traefik.http.routers.vodomat_server_admin-https.tls=true
@@ -66,3 +67,4 @@
           traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
           traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
           traefik.http.routers.vodomat_server_admin-http.middlewares=https-redirect
+          {% endif %}

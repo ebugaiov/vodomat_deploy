@@ -5,6 +5,7 @@ path_to_env_file: "/home/{{ sudo_user }}/.env"
 
 dockerfile: "Dockerfile"
 github_repo_name: "{{ deploy_service_name }}"
+github_repo_version: "HEAD"
 deploy_service_postfix: ''
 
 server_port: 9000

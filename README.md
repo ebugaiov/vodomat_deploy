@@ -1,22 +1,12 @@
 # vodomat_deploy
 
 ### Vodomat_deploy is a bunch of scripts deploying vodomat services to production.
-### There are two git branches:
-- main: for production deploy
-- dev: for local deploy
-### Check in vault file several variables before deploy in production environment:
-- sudo_user
-- vodomat_server_hostname
-- vodomat_hub_hostname
-- server_url
-- api_url
-- admin_server_url
 
 # How to use
 ### 1. Server - deploy server services (server.yml):
  - vodomat_server
 
-#### - Setup instance(install docker and etc.):
+#### - Setup instance(install docker and etc.)
 ```bash
 ansible-playbook -i inventory.ini server.yml -K --tags "preconfig"
 ```
@@ -35,6 +25,9 @@ ansible-playbook -i inventory.ini server.yml --tags "run_database"
 ```bash
 ansible-playbook -i inventory.ini server.yml --tags "deploy_server"
 ```
+```bash
+ansible-playbook -i inventory.ini server.yml --tags "deploy_server" -e "production=true"
+```
 
 -------
 
@@ -42,7 +35,7 @@ ansible-playbook -i inventory.ini server.yml --tags "deploy_server"
  - vodomat_api
  - vodomat_server_admin
 
-#### - Setup instance(install docker and etc.):
+#### - Setup instance(install docker and etc.)
 ```bash
 ansible-playbook -i inventory.ini hub.yml -K --tags "preconfig"
 ```
@@ -61,17 +54,23 @@ ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_all"
 ```bash
 ansible-playbook -i inventory.ini hub.yml --tags "deploy_api"
 ```
+```bash
+ansible-playbook -i inventory.ini hub.yml --tags "deploy_api" -e "production=true"
+```
 
 #### - Deploy vodomat_server_admin service
 ```bash
 ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_server_admin"
+```
+```bash
+ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_server_admin" -e "production=true"
 ```
 --------
 ### 3. App - deploy vodomat-pay application (app.yml):
  - vodomat_pay_api
  - vodomat_pay_frontend
 
-#### - Setup instance(install docker and etc.):
+#### - Setup instance(install docker and etc.)
 ```bash
 ansible-playbook -i inventory.ini app.yml -K --tags "preconfig"
 ```
@@ -88,12 +87,22 @@ ansible-playbook -i inventory.ini app.yml --tags "deploy_all"
 
 #### - Deploy vodomat_pay_api service
 ```bash
-ansible-playbook -i inventory.ini hub.yml --tags "deploy_app_api"
+ansible-playbook -i inventory.ini app.yml --tags "deploy_app_api"
+```
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "deploy_app_api" -e "production=true"
 ```
 
 #### - Deploy vodomat_pay_frontend service
 ```bash
 ansible-playbook -i inventory.ini app.yml --tags "deploy_app_frontend"
 ```
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "deploy_app_frontend" -e "production=true"
+```
 --------
--K - enter sudo password
+1. -K - enter sudo password
+<br>
+2. -e "github_repo_version=xxxxxx" - add in the end of command for specific repo commit
+<br>
+3. -e "production=true" - deploy services in production environment (default - "false")

@@ -1,4 +1,6 @@
 ---
+production: false
+
 server_network_name: server_network
 
 vodomat_server_image_tag: "{{ hostvars['vodomat_server']['ansible_facts']['vodomat_server_image_tag'] }}"

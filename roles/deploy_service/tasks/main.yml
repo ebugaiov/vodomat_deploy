@@ -22,6 +22,7 @@
         repo: "{{ github_url_base }}/{{ github_repo_name }}.git"
         accept_newhostkey: true
         dest: "{{ build_temp_folder }}"
+        version: "{{ github_repo_version }}"
       register: git_result
 
 - name: "[{{ deploy_service_name }}] Build service image"
