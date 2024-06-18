@@ -13,7 +13,7 @@ ansible-playbook -i inventory.ini server.yml -K --tags "preconfig"
 
 #### - Run reverse-proxy (Traefik)
 ```bash
-ansible-playbook -i inventory.ini server.yml --tags "run_proxy"
+ansible-playbook -i inventory.ini server.yml -K --tags "run_proxy"
 ```
 
 #### - Run database (MariaDB)
@@ -42,7 +42,7 @@ ansible-playbook -i inventory.ini hub.yml -K --tags "preconfig"
 
 #### - Run reverse-proxy (Traefik)
 ```bash
-ansible-playbook -i inventory.ini hub.yml --tags "run_proxy"
+ansible-playbook -i inventory.ini hub.yml -K --tags "run_proxy"
 ```
 
 #### - Deploy ALL services
@@ -77,7 +77,7 @@ ansible-playbook -i inventory.ini app.yml -K --tags "preconfig"
 
 #### - Run reverse-proxy (Traefik)
 ```bash
-ansible-playbook -i inventory.ini app.yml --tags "run_proxy"
+ansible-playbook -i inventory.ini app.yml -K --tags "run_proxy"
 ```
 
 #### - Deploy ALL services
