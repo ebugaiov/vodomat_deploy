@@ -14,7 +14,7 @@ server {
         add_header Cache-Control "public";
     }
 
-    location /api {
+    location ~ ^/(api|payment) {
         proxy_pass http://vodomat_pay_api:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
