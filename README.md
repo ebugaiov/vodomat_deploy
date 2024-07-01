@@ -84,6 +84,9 @@ ansible-playbook -i inventory.ini app.yml -K --tags "run_proxy"
 ```bash
 ansible-playbook -i inventory.ini app.yml --tags "deploy_all"
 ```
+```bash
+ansible-playbook -i inventory.ini app.yml --tags "deploy_all" -e "production=true"
+```
 
 #### - Deploy vodomat_pay_api service
 ```bash

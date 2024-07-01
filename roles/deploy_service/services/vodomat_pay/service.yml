@@ -6,6 +6,8 @@
     restart_policy: always
     networks:
       - name: "{{ server_network_name }}"
+    volumes:
+      - "/home/{{ sudo_user }}/{{ portmone_orders_dir }}:/opt/api/{{ portmone_orders_dir }}"
     env_file: "{{ path_to_env_file }}"
     env:
       TZ: "{{ timezone }}"
@@ -16,8 +18,8 @@
   block:
     - name: Copy nginx config file to remote server
       ansible.builtin.template:
-        src: ./pay.conf.j2
-        dest: "/home/{{ sudo_user }}/pay.conf"
+        src: ./nginx.conf.j2
+        dest: "/home/{{ sudo_user }}/nginx.conf"
         mode: "0644"
 
     - name: Run nginx container with frontend
@@ -28,7 +30,7 @@
         networks:
           - name: "{{ server_network_name }}"
         volumes:
-          - "/home/{{ sudo_user }}/pay.conf:/etc/nginx/conf.d/default.conf:ro"
+          - "/home/{{ sudo_user }}/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
         env:
           TZ: "{{ timezone }}"
         labels:
