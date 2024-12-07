@@ -1,7 +1,7 @@
 ---
 - name: "[vodomat_server] Run service container(s)"
   community.docker.docker_container:
-    name: "vodomat_server-{{ item }}"
+    name: "vodomat_server"
     image: "vodomat_server:{{ vodomat_server_image_tag }}"
     restart_policy: always
     networks:
@@ -14,20 +14,19 @@
       traefik.http.routers.vodomat_server-http.rule=Host(`"{{ server_url }}"`)
       traefik.http.services.vodomat_server.loadbalancer.server.port="{{ server_port }}"
       traefik.http.routers.vodomat_server-http.entrypoints=http
-  with_sequence: start=0 count={{ server_container_count }}
 
-- name: Delete old statistic rows from database
-  block:
-    - name: Create script for delete old statistic
-      ansible.builtin.template:
-        src: ./delete_old_data.py.j2
-        dest: "/home/{{ sudo_user }}/delete_old_data.py"
-        owner: "{{ sudo_user }}"
-        mode: '0700'
-
-    - name: Add script to cron
-      ansible.builtin.cron:
-        name: "Delete old rows"
-        minute: "0"
-        hour: "3"
-        job: "/home/{{ sudo_user }}/delete_old_data.py"
+#- name: Delete old statistic rows from database
+#  block:
+#    - name: Create script for delete old statistic
+#      ansible.builtin.template:
+#        src: ./delete_old_data.py.j2
+#        dest: "/home/{{ sudo_user }}/delete_old_data.py"
+#        owner: "{{ sudo_user }}"
+#        mode: '0700'
+#
+#    - name: Add script to cron
+#      ansible.builtin.cron:
+#        name: "Delete old rows"
+#        minute: "0"
+#        hour: "3"
+#        job: "/home/{{ sudo_user }}/delete_old_data.py"
