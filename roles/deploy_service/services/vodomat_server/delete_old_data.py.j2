@@ -1,22 +1,90 @@
 #!/usr/bin/env python3
 
+import logging
 from datetime import date, timedelta
 import MySQLdb
+from MySQLdb.connections import Connection
+from MySQLdb.cursors import Cursor
 
-interval_statistic = date.today() - timedelta(days=30)
-interval_deposit = date.today() - timedelta(days=365)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
-db = MySQLdb.connect(unix_socket='/tmp/mysqld/mysqld.sock',
-                     user="{{ db_server_test['user'] }}",
-                     password="{{ db_server_test['password'] }}",
-                     database="{{ db_server_test['database'] }}")
-cursor = db.cursor()
+def get_db_connection(host: str, user: str, password: str, database: str) -> Connection:
+    """Create and return a database connection."""
+    try:
+        return MySQLdb.connect(
+            host=host, user=user, password=password, database=database
+        )
+    except MySQLdb.MySQLError as e:
+        logging.error("Failed to connect to the database: %s", e)
+        raise
 
-cursor.execute(f'DELETE FROM statistic WHERE time < ${interval_statistic}')
-cursor.execute(f'DELETE FROM deposit WHERE time < ${interval_deposit}')
+def clean_old_records(cursor: Cursor, table: str, date_column: str, threshold_date: str):
+    """Delete records older than a specified threshold date."""
+    query = f"DELETE FROM {table} WHERE {date_column} < %s"
+    try:
+        cursor.execute(query, (threshold_date,))
+        logging.info("Cleaned records from table '%s' older than '%s'", table, threshold_date)
+    except MySQLdb.MySQLError as e:
+        logging.error("Failed to clean records in table '%s': %s", table, e)
+        raise
 
-db.commit()
-cursor.execute('OPTIMIZE TABLE statistic')
-cursor.execute('OPTIMIZE TABLE deposit')
+def optimize_table(cursor: Cursor, table: str):
+    """Optimize the specified table."""
+    query = f"OPTIMIZE TABLE {table}"
+    try:
+        cursor.execute(query)
+        logging.info("Optimized table '%s'", table)
+    except MySQLdb.MySQLError as e:
+        logging.error("Failed to optimize table '%s': %s", table, e)
+        raise
 
-db.close()
+def main():
+    # Database connection parameters (assumed to be sourced securely)
+    db_params = {
+        "host": "{{ db_server_test['host'] }}",
+        "user": "{{ db_server_test['user'] }}",
+        "password": "{{ db_server_test['password'] }}",
+        "database": "{{ db_server_test['database'] }}",
+    }
+
+    # Calculate threshold dates
+    interval_statistic = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+    interval_deposit = (date.today() - timedelta(days=365)).strftime("%Y-%m-%d")
+
+    # Define tables and date columns to clean
+    tables_to_clean = [
+        {"table": "statistic", "date_column": "time", "threshold_date": interval_statistic},
+        {"table": "deposit", "date_column": "time", "threshold_date": interval_deposit},
+    ]
+
+    try:
+        with get_db_connection(**db_params) as db:
+            with db.cursor() as cursor:
+                # Clean old records
+                for table_info in tables_to_clean:
+                    clean_old_records(
+                        cursor,
+                        table_info["table"],
+                        table_info["date_column"],
+                        table_info["threshold_date"],
+                    )
+
+                # Commit the changes
+                db.commit()
+
+                # Optimize tables
+                for table_info in tables_to_clean:
+                    optimize_table(cursor, table_info["table"])
+
+    except MySQLdb.MySQLError:
+        logging.error("Database operation failed. Rolling back any changes.")
+    finally:
+        logging.info("Database cleanup script completed.")
+
+if __name__ == "__main__":
+    main()
+
