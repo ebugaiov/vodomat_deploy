@@ -12,11 +12,11 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
-def get_db_connection(host: str, user: str, password: str, database: str) -> Connection:
+def get_db_connection(host: str, port: int, user: str, password: str, database: str) -> Connection:
     """Create and return a database connection."""
     try:
         return MySQLdb.connect(
-            host=host, user=user, password=password, database=database
+            host=host, port=port, user=user, password=password, database=database
         )
     except MySQLdb.MySQLError as e:
         logging.error("Failed to connect to the database: %s", e)
@@ -45,10 +45,11 @@ def optimize_table(cursor: Cursor, table: str):
 def main():
     # Database connection parameters (assumed to be sourced securely)
     db_params = {
-        "host": "{{ db_server_test['host'] }}",
-        "user": "{{ db_server_test['user'] }}",
-        "password": "{{ db_server_test['password'] }}",
-        "database": "{{ db_server_test['database'] }}",
+        "host": "{{ db_server_remote['host'] }}",
+        "port": "{{ db_server_remote['port'] }}",
+        "user": "{{ db_server_remote['user'] }}",
+        "password": "{{ db_server_remote['password'] }}",
+        "database": "{{ db_server_remote['database'] }}",
     }
 
     # Calculate threshold dates
