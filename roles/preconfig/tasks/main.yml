@@ -5,13 +5,13 @@
     - name: Install ufw
       ansible.builtin.apt:
         name: ufw
+        state: present
 
-    - name: Open tcp ports
+    - name: Open SSH port (TCP 22)
       community.general.ufw:
         rule: allow
-        port: "{{ item }}"
+        port: 22
         proto: tcp
-      loop: [22]
 
     - name: Enable ufw
       community.general.ufw:
