@@ -46,7 +46,7 @@ def main():
     # Database connection parameters (assumed to be sourced securely)
     db_params = {
         "host": "{{ db_server_remote['host'] }}",
-        "port": "{{ db_server_remote['port'] }}",
+        "port": {{ db_server_remote['port'] | int }},
         "user": "{{ db_server_remote['user'] }}",
         "password": "{{ db_server_remote['password'] }}",
         "database": "{{ db_server_remote['database'] }}",
