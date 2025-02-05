@@ -11,7 +11,7 @@
 
 - name: Run service
   block:
-    - name: "[vodomat_api] Run service container(s)"
+    - name: "[vodomat_server_admin] Run service container(s)"
       community.docker.docker_container:
         name: vodomat_server_admin
         image: "vodomat_server_admin:{{ vodomat_server_admin_image_tag }}"
@@ -19,14 +19,14 @@
         networks:
           - name: "{{ server_network_name }}"
         volumes:
-          - server_admin_static:/opt/server_admin/static:z
-          - server_admin_db:/opt/server_admin/database:Z
+          - server_admin_static:/app/static:z
+          - server_admin_db:/app/database:Z
         env_file: "{{ path_to_env_file }}"
 
     - name: Collect all static in static_volume
       community.docker.docker_container_exec:
         container: vodomat_server_admin
-        command: python manage.py collectstatic --no-input
+        command: uv run python manage.py collectstatic --no-input
 
     - name: Copy user database if it does not exist
       become: true
@@ -54,7 +54,7 @@
           - name: "{{ server_network_name }}"
         volumes:
           - "/home/{{ sudo_user }}/server_admin.conf:/etc/nginx/conf.d/default.conf:ro"
-          - server_admin_static:/opt/server_admin/static:ro
+          - server_admin_static:/app/static:ro
         labels:
           traefik.enable=true
           traefik.http.routers.vodomat_server_admin-http.rule=Host(`"{{ server_admin_url }}"`)
