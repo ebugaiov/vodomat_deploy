@@ -1,0 +1,24 @@
+---
+- name: "[vodomat_driver] Run service container(s)"
+  community.docker.docker_container:
+    name: vodomat_driver
+    image: "vodomat_driver:{{ vodomat_driver_image_tag }}"
+    restart_policy: always
+    networks:
+      - name: "{{ server_network_name }}"
+    env_file: "{{ path_to_env_file }}"
+    env:
+      TZ: "{{ timezone }}"
+    labels:
+      traefik.enable=true
+      traefik.http.routers.vodomat_driver-http.rule=Host(`"{{ driver_url }}"`)
+      traefik.http.routers.vodomat_driver-http.entrypoints=http
+      {% if production %}
+      traefik.http.routers.vodomat_driver-https.rule=Host(`"{{ driver_url }}"`)
+      traefik.http.routers.vodomat_driver-https.entrypoints=https
+      traefik.http.routers.vodomat_driver-https.tls=true
+      traefik.http.routers.vodomat_driver-https.tls.certresolver=le
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      traefik.http.routers.vodomat_driver-http.middlewares=https-redirect
+      {% endif %}

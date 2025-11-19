@@ -16,3 +16,8 @@
     - role: deploy_service
       deploy_service_name: vodomat_server_admin
       tags: [deploy_server_admin, deploy_all]
+    # Deploy Vodomat Driver
+    - role: deploy_service
+      deploy_service_name: vodomat_driver
+      github_repo_name: vodomat-driver
+      tags: [deploy_driver, deploy_all]

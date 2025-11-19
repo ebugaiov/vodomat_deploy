@@ -34,6 +34,7 @@ ansible-playbook -i inventory.ini server.yml --tags "deploy_server" -e "producti
 ### 2. Hub - deploy hub services (hub.yml):
  - vodomat_api
  - vodomat_server_admin
+ - vodomat_driver
 
 #### - Setup instance(install docker and etc.)
 ```bash
@@ -64,6 +65,13 @@ ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_server_admin"
 ```
 ```bash
 ansible-playbook -i inventory.ini hub.yml -K --tags "deploy_server_admin" -e "production=true"
+```
+#### - Deploy vodomat_driver service
+```bash
+ansible-playbook -i inventory.ini hub.yml --tags "deploy_driver"
+```
+```bash
+ansible-playbook -i inventory.ini hub.yml --tags "deploy_driver" -e "production=true"
 ```
 --------
 ### 3. App - deploy vodomat-pay application (app.yml):
