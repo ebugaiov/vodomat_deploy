@@ -8,13 +8,15 @@
         restart_policy: always
         networks:
           - name: "{{ server_network_name }}"
+        volumes:
+          - redis_data:/data
 
 - name: "[{{ deploy_service_name }}] Clone repo"
   block:
     - name: Copy ssh-key
       ansible.builtin.copy:
         src: "~/.ssh/id_rsa"
-        dest: "/home/{{ sudo_user }}/.ssh/id_rsa"
+        dest: "{{ ssh_key_temp_path }}"
         mode: "0600"
 
     - name: Clone github repo
@@ -23,6 +25,7 @@
         accept_newhostkey: true
         dest: "{{ build_temp_folder }}"
         version: "{{ github_repo_version }}"
+        key_file: "{{ ssh_key_temp_path }}"
       register: git_result
 
 - name: "[{{ deploy_service_name }}] Build service image"
@@ -57,7 +60,7 @@
     - name: Remove ssh-key
       ansible.builtin.file:
         state: absent
-        path: "/home/{{ sudo_user }}/.ssh/id_rsa"
+        path: "{{ ssh_key_temp_path }}"
 
     - name: Remove temp folder for build
       ansible.builtin.file:

@@ -1,7 +1,8 @@
 ---
 build_temp_folder: "/home/{{ sudo_user }}/temp_for_build"
 
-path_to_env_file: "/home/{{ sudo_user }}/.env"
+path_to_env_file: "/home/{{ sudo_user }}/.env.{{ deploy_service_name }}"
+ssh_key_temp_path: "/home/{{ sudo_user }}/.ssh/id_rsa_{{ deploy_service_name }}_temp"
 
 dockerfile: "Dockerfile"
 github_repo_name: "{{ deploy_service_name }}"
